@@ -1,0 +1,22 @@
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: write-test-container
+spec:
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'write-test-container:latest'
+  strategy:
+    type: Docker
+    dockerStrategy: {}
+  source:
+    type: Git
+    contextDir: image
+    git:
+      uri: 'https://github.com/Jamstah/write-test-container.git'
+  triggers:
+    - type: GitHub
+      github:
+        secret: pjv9j4vpse4oc4
+    - type: ConfigChange
