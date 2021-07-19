@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: scc-anyuid-fsgroup0
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Mi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: scc-anyuid-fsgroup0
+spec:
+  template:
+    spec:
+      containers:
+        - name: write-test-container
+          image: image-registry.openshift-image-registry.svc:5000/scctests/write-test-container:latest
+          volumeMounts:
+            - name: mnt
+              mountPath: /mnt
+      volumes:
+        - name: mnt
+          persistentVolumeClaim:
+            claimName: scc-anyuid-fsgroup0
+      securityContext:
+        fsGroup: 0
+      restartPolicy: Never
+      serviceAccountName: scc-anyuid
+  backoffLimit: 0

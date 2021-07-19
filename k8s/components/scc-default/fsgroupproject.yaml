@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: scc-default-fsgroupproject
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Mi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: scc-default-fsgroupproject
+spec:
+  template:
+    spec:
+      containers:
+        - name: write-test-container
+          image: image-registry.openshift-image-registry.svc:5000/scctests/write-test-container:latest
+          volumeMounts:
+            - name: mnt
+              mountPath: /mnt
+      volumes:
+        - name: mnt
+          persistentVolumeClaim:
+            claimName: scc-default-fsgroupproject
+      securityContext:
+        fsGroup: 1000670000
+      restartPolicy: Never
+  backoffLimit: 0
